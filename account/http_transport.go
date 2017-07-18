@@ -24,41 +24,41 @@ func MakeHTTPHandler(logger log.Logger, endpoints Endpoints) http.Handler {
 	}
 
 	getAccountHandler := kithttp.NewServer(
-		endpoints.GetAccountEndpoint,
+		endpoints.GetByID,
 		decodeGetAccountRequest,
 		encodeResponse,
 		options...,
 	)
 
 	getAccountsHandler := kithttp.NewServer(
-		endpoints.GetAccountsEndpoint,
+		endpoints.GetList,
 		decodeGetAccountsRequest,
 		encodeResponse,
 		options...,
 	)
 
 	updateAccountHandler := kithttp.NewServer(
-		endpoints.UpdateAccountEndpoint,
+		endpoints.Update,
 		decodeUpdateAccountRequest,
 		encodeResponse,
 		options...,
 	)
 
 	createAccountHandler := kithttp.NewServer(
-		endpoints.CreateAcountEndpoint,
+		endpoints.Create,
 		decodeCreateAccountRequest,
 		encodeCreateAccountResponse,
 		options...,
 	)
 
 	deleteAccountHandler := kithttp.NewServer(
-		endpoints.DeleteAccountEndpoint,
+		endpoints.Delete,
 		decodeDeleteAccountRequest,
-		encodeResponse,
+		encodeDeleteAccountResponse,
 		options...,
 	)
 
-	r := mux.NewRouter().PathPrefix("/Accounts/").Subrouter().StrictSlash(true)
+	r := mux.NewRouter().PathPrefix("/accounts/").Subrouter().StrictSlash(true)
 
 	r.Handle("/", getAccountsHandler).Methods("GET")
 	r.Handle("/{id}", getAccountHandler).Methods("GET")
@@ -71,10 +71,10 @@ func MakeHTTPHandler(logger log.Logger, endpoints Endpoints) http.Handler {
 
 func decodeGetAccountsRequest(ctx context.Context, r *http.Request) (request interface{}, err error) {
 	// TODO : parse pagination filter properly
-	p := Pagination{Size: DefaultPaginationSize}
+	p := Pagination{Size: DefaultPaginationSize, Page: 0}
 
 	f := Filter{
-		IDs: strings.Split(r.URL.Query().Get("id"), ","),
+		IDs: strings.Split(r.URL.Query().Get("account_id"), ","),
 	}
 
 	return GetAccountsRequest{Filter: f, Pagination: p}, nil
@@ -127,13 +127,19 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 	return json.NewEncoder(w).Encode(response)
 }
 
+func encodeDeleteAccountResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	// TODO : refactor return
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
 func encodeCreateAccountResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	// TODO : refactor return
-	ID, ok := response.(*string)
+	ID, ok := response.(string)
 	if !ok {
 		return errors.New("An error occured while creating Account")
 	}
-	w.Header().Set("Location", fmt.Sprintf("/Accounts/%v", *ID))
+	w.Header().Set("Location", fmt.Sprintf("/accounts/%v", ID))
 	w.WriteHeader(http.StatusCreated)
 	return nil
 }

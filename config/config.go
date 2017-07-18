@@ -13,7 +13,8 @@ var (
 
 // Config represents the application configuration
 type Config struct {
-	Port int `mapstructure:"APP_PORT"`
+	Port                  int    `mapstructure:"APP_PORT"`
+	MongoConnectionString string `mapstructure:"MONGO_CONNECTION_STRING"`
 }
 
 // GetConfig return the Application configuration
@@ -21,6 +22,7 @@ func GetConfig() *Config {
 	if appConfig == nil {
 		appConfig = &Config{}
 		viper.SetDefault("APP_PORT", 8001)
+		viper.SetDefault("MONGO_CONNECTION_STRING", "localhost")
 
 		if os.Getenv("ENVIRONMENT") == "DEV" {
 			viper.SetConfigName("config")
@@ -35,6 +37,7 @@ func GetConfig() *Config {
 		}
 
 		appConfig.Port = viper.GetInt("APP_PORT")
+		appConfig.Port = viper.GetInt("MONGO_CONNECTION_STRING")
 
 		err := viper.Unmarshal(appConfig)
 		if err != nil {

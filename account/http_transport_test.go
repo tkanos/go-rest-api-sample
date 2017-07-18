@@ -127,9 +127,9 @@ func Test_EncodeResponse_Should_Return_JSON_ContentType(t *testing.T) {
 
 func Test_EncodeCreateAccountResponse(t *testing.T) {
 	ID := "123"
-	response := &ID
+	response := ID
 	expectedBody := ""
-	expectedLocation := fmt.Sprintf("/Accounts/%v", ID)
+	expectedLocation := fmt.Sprintf("/accounts/%v", ID)
 
 	w := httptest.NewRecorder()
 	err := encodeCreateAccountResponse(context.Background(), w, response)
@@ -141,6 +141,19 @@ func Test_EncodeCreateAccountResponse(t *testing.T) {
 	assert.Equal(t, expectedBody, string(body))
 	assert.Equal(t, expectedLocation, w.Header().Get("Location"))
 	assert.Equal(t, http.StatusCreated, w.Code)
+}
+
+func Test_EncodeDeleteAccountResponse(t *testing.T) {
+
+	w := httptest.NewRecorder()
+	err := encodeDeleteAccountResponse(context.Background(), w, nil)
+	assert.Nil(t, err)
+
+	body, err := ioutil.ReadAll(w.Body)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "", string(body))
+	assert.Equal(t, http.StatusNoContent, w.Code)
 }
 
 func Test_EncodeError_Should_Return_JSON_ContentType(t *testing.T) {

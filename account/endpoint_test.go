@@ -47,7 +47,7 @@ func Test_MakeUpdateAccountEndpoint(t *testing.T) {
 
 func Test_MakeCreateAccountEndpoint(t *testing.T) {
 	fakeService := new(mockedService)
-	fakeService.On("CreateAccount", Account{}).Return(new(string), nil)
+	fakeService.On("CreateAccount", Account{}).Return("", nil)
 
 	endpoint := MakeCreateAccountEndpoint(fakeService)
 	_, err := endpoint(nil, CreateAccountRequest{})

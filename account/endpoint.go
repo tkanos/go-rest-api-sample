@@ -8,11 +8,11 @@ import (
 
 // Endpoints represent the order service endpoints
 type Endpoints struct {
-	GetAccountEndpoint    endpoint.Endpoint
-	GetAccountsEndpoint   endpoint.Endpoint
-	UpdateAccountEndpoint endpoint.Endpoint
-	CreateAcountEndpoint  endpoint.Endpoint
-	DeleteAccountEndpoint endpoint.Endpoint
+	GetByID endpoint.Endpoint
+	GetList endpoint.Endpoint
+	Update  endpoint.Endpoint
+	Create  endpoint.Endpoint
+	Delete  endpoint.Endpoint
 }
 
 // MakeGetAccountEndpoint returns an endpoint used for getting an account
@@ -89,6 +89,7 @@ type DeleteAccountRequest struct {
 // Pagination ...
 type Pagination struct {
 	Size int
+	Page int
 }
 
 // DefaultPaginationSize ...
